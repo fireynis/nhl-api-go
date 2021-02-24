@@ -92,7 +92,13 @@ func New(opts ...Option) (*API, error) {
 	return api, nil
 }
 
-func (api *API) makeRequest(ctx context.Context, method, uri string, headers http.Header) ([]byte, error) {
+// makeRequest makes a HTTP request and returns the body as a byte slice,
+// closing it before returning. params will be serialized to JSON.
+func (api *API) makeRequest(method, uri string, headers http.Header) ([]byte, error) {
+	return api.runRequest(context.TODO(), method, uri, headers)
+}
+
+func (api *API) runRequest(ctx context.Context, method, uri string, headers http.Header) ([]byte, error) {
 	var err error
 
 	var resp *http.Response
@@ -118,6 +124,7 @@ func (api *API) makeRequest(ctx context.Context, method, uri string, headers htt
 		if err != nil {
 			return nil, fmt.Errorf("error caused by request rate limiting %w", err)
 		}
+
 		resp, respErr = api.request(ctx, method, uri, reqBody, headers)
 
 		// retry if the server is rate limiting us or if it failed
