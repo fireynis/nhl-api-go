@@ -43,7 +43,7 @@ type Logger interface {
 	Printf(format string, v ...interface{})
 }
 
-type Response struct {
+type BaseResponse struct {
 	Copyright string `json:"copyright"`
 }
 
